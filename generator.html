@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<title>Galerie-Generator</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg:          #F5F5F4;
+    --surface:     #FFFFFF;
+    --surface-2:   #EDEDEB;
+    --border:      #DCDCD9;
+    --text:        #1A1A1D;
+    --text-muted:  #65656E;
+    --accent:      #EA515B;
+    --accent-dark: #C73A43;
+    --step-bg:     #EA515B;
+    --code-bg:     #EEEEED;
+    --code-text:   #3A3A40;
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --bg:         #111113;
+        --surface:    #1D1D20;
+        --surface-2:  #252528;
+        --border:     #2C2C30;
+        --text:       #ECECEA;
+        --text-muted: #8C8C96;
+        --accent:     #FF636A;
+        --accent-dark:#FF848A;
+        --step-bg:    #FF636A;
+        --code-bg:    #252528;
+        --code-text:  #A8A8B3;
+    }
+}
+:root[data-theme="dark"] {
+    --bg:         #111113;
+    --surface:    #1D1D20;
+    --surface-2:  #252528;
+    --border:     #2C2C30;
+    --text:       #ECECEA;
+    --text-muted: #8C8C96;
+    --accent:     #FF636A;
+    --accent-dark:#FF848A;
+    --step-bg:    #FF636A;
+    --code-bg:    #252528;
+    --code-text:  #A8A8B3;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Montserrat', system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 2.5rem 1rem 5rem;
+    min-height: 100vh;
+}
+
+.page {
+    max-width: 620px;
+    margin: 0 auto;
+}
+
+/* ── Header ───────────────────────────────────────── */
+.header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+.header-logo {
+    height: 32px;
+    width: auto;
+    flex-shrink: 0;
+}
+.header-text h1 {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+}
+.header-text p {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.1rem;
+}
+
+/* ── Card section ─────────────────────────────────── */
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 1.25rem;
+}
+.step {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--step-bg);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: 0;
+}
+.card-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+
+/* ── Form elements ────────────────────────────────── */
+.field { margin-bottom: 1rem; }
+.field:last-child { margin-bottom: 0; }
+
+.field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+label {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.35rem;
+}
+
+input[type="text"],
+input[type="url"],
+textarea {
+    display: block;
+    width: 100%;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    padding: 0.55rem 0.75rem;
+    font-family: 'Montserrat', system-ui, sans-serif;
+    font-size: 0.82rem;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+}
+input[type="text"]:focus,
+input[type="url"]:focus,
+textarea:focus { border-color: var(--accent); }
+textarea { resize: vertical; min-height: 140px; line-height: 1.7; }
+
+.hint {
+    margin-top: 0.35rem;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+.hint code {
+    font-family: ui-monospace, 'SF Mono', monospace;
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 0.05em 0.3em;
+    border-radius: 3px;
+    font-size: 0.95em;
+}
+
+.slug-line {
+    margin-top: 0.4rem;
+    font-size: 0.71rem;
+    color: var(--text-muted);
+}
+.slug-line strong {
+    font-family: ui-monospace, 'SF Mono', monospace;
+    color: var(--accent);
+    font-weight: 600;
+    background: var(--code-bg);
+    padding: 0.05em 0.35em;
+    border-radius: 3px;
+}
+
+/* ── URL preview ──────────────────────────────────── */
+.url-box {
+    margin-top: 0.6rem;
+    background: var(--code-bg);
+    border-radius: 6px;
+    padding: 0.65rem 0.8rem;
+    font-family: ui-monospace, 'SF Mono', monospace;
+    font-size: 0.67rem;
+    color: var(--text-muted);
+    line-height: 1.9;
+    word-break: break-all;
+    display: none;
+}
+.url-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+.url-val { color: var(--accent); }
+
+/* ── Count badge ──────────────────────────────────── */
+.badge {
+    display: none;
+    align-items: center;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 0.1rem 0.55rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-left: 0.4rem;
+    vertical-align: middle;
+}
+
+/* ── Divider ──────────────────────────────────────── */
+.divider { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
+
+/* ── Result section ───────────────────────────────── */
+.result-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+}
+.gallery-link {
+    background: var(--code-bg);
+    border-radius: 7px;
+    padding: 0.7rem 0.9rem;
+    font-family: ui-monospace, 'SF Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    word-break: break-all;
+    margin-bottom: 1.25rem;
+    line-height: 1.6;
+}
+.json-preview {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.9rem 1rem;
+    font-family: ui-monospace, 'SF Mono', monospace;
+    font-size: 0.67rem;
+    line-height: 1.8;
+    color: var(--code-text);
+    overflow-x: auto;
+    white-space: pre;
+    max-height: 280px;
+    overflow-y: auto;
+    margin-bottom: 1.25rem;
+}
+.json-empty {
+    font-family: 'Montserrat', sans-serif;
+    font-style: italic;
+    font-size: 0.78rem;
+    opacity: 0.5;
+    text-align: center;
+    padding: 0.5rem 0;
+}
+
+.btn-download {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.85rem 1.5rem;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, opacity 0.15s;
+    letter-spacing: 0.01em;
+}
+.btn-download:hover:not(:disabled) { background: var(--accent-dark); }
+.btn-download:disabled { opacity: 0.38; cursor: not-allowed; }
+.btn-download svg { flex-shrink: 0; }
+
+/* ── Instruction note ─────────────────────────────── */
+.note {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+}
+.note strong { color: var(--text); }
+
+@media (max-width: 500px) {
+    .field-row { grid-template-columns: 1fr; }
+    body { padding: 1.5rem 0.9rem 4rem; }
+    .card { padding: 1.25rem; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+    <header class="header">
+        <img class="header-logo" src="assets/a+_logo_ACADEMIES_MULTI_RGB.svg" alt="" onerror="this.style.display='none'">
+        <div class="header-text">
+            <h1>Galerie-Generator</h1>
+            <p>Neue Veranstaltungsgalerie konfigurieren</p>
+        </div>
+    </header>
+
+    <div class="note">
+        <strong>So geht's:</strong> Felder ausfüllen, JSON herunterladen, Datei in den Ordner <code style="font-family:monospace;background:var(--code-bg);padding:.05em .3em;border-radius:3px">events/</code> legen – fertig.
+    </div>
+
+    <!-- 1. Event -->
+    <div class="card">
+        <div class="card-header">
+            <div class="step">1</div>
+            <div class="card-title">Event-Informationen</div>
+        </div>
+
+        <div class="field">
+            <label>Titel der Veranstaltung</label>
+            <input type="text" id="title" placeholder="z.B. SRIS'27: Swiss Research and Innovation Summit" oninput="onTitleInput()">
+        </div>
+
+        <div class="field">
+            <label>URL-Kürzel <span style="font-weight:500;text-transform:none;font-size:1.1em;">(Link-Name)</span></label>
+            <input type="text" id="slug" placeholder="sris-2027" oninput="onSlugInput()">
+            <div class="slug-line">Galerie-Link endet auf: <strong id="slug-preview">?event=…</strong></div>
+            <div class="hint">Nur Kleinbuchstaben, Zahlen und Bindestriche – wird automatisch ausgefüllt.</div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="field-row">
+            <div class="field">
+                <label>Fotografin / Fotograf</label>
+                <input type="text" id="photo-name" placeholder="Manuel Lopez" oninput="update()">
+            </div>
+            <div class="field">
+                <label>Website (optional)</label>
+                <input type="url" id="photo-url" placeholder="https://manuellopez.com" oninput="update()">
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Copyright-Hinweis</label>
+            <input type="text" id="copyright" oninput="onCopyrightInput()" placeholder="Wird automatisch ausgefüllt …">
+            <div class="hint">Automatisch generiert – kann angepasst werden.</div>
+        </div>
+    </div>
+
+    <!-- 2. Bilder -->
+    <div class="card">
+        <div class="card-header">
+            <div class="step">2</div>
+            <div class="card-title">Bilder</div>
+        </div>
+
+        <div class="field">
+            <label>Cloudinary-Ordnerpfad</label>
+            <input type="text" id="cloud-path" placeholder="assets/veranstaltungen/neues-event/bilder" oninput="update()">
+            <div class="hint">
+                Den Pfad aus Cloudinary einfügen – den Teil nach
+                <code>a-plus-cms-statamic/p/</code><br>
+                z.B. <code>assets/veranstaltungen/sris/2026-sris/2026-sris-bilder</code>
+            </div>
+            <div class="url-box" id="url-box">
+                <span class="url-label">Vollbild  </span><span class="url-val" id="url-full"></span>&#10;<span class="url-label">Vorschau  </span><span class="url-val" id="url-thumb"></span>
+            </div>
+        </div>
+
+        <div class="field">
+            <label>
+                Dateinamen
+                <span class="badge" id="count-badge"></span>
+            </label>
+            <textarea id="names" placeholder="260317103456_lom.jpg&#10;260317103815_lom.jpg&#10;260317104316_lom.jpg&#10;…&#10;&#10;Einen Dateinamen pro Zeile." oninput="update()"></textarea>
+            <div class="hint">Einen Dateinamen pro Zeile. Vollständige URLs werden automatisch auf den Dateinamen gekürzt.</div>
+        </div>
+    </div>
+
+    <!-- 3. Herunterladen -->
+    <div class="card">
+        <div class="card-header">
+            <div class="step">3</div>
+            <div class="card-title">Herunterladen</div>
+        </div>
+
+        <div class="result-label">Galerie-Link</div>
+        <div class="gallery-link" id="gallery-link">—</div>
+
+        <div class="result-label">JSON-Vorschau</div>
+        <pre class="json-preview" id="json-preview"><span class="json-empty">Felder ausfüllen, um die Vorschau zu sehen …</span></pre>
+
+        <button class="btn-download" id="dl-btn" disabled onclick="download()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            JSON herunterladen
+        </button>
+    </div>
+
+</div>
+<script>
+const CLOUD = 'a-plus-cms-statamic';
+const XFULL  = 'w_2000,h_2000,c_limit,q_auto,f_auto';
+const XTHUMB = 'w_400,h_400,c_fill,g_auto,q_auto,f_auto';
+
+let slugEdited = false;
+let copyrightEdited = false;
+let lastJson = null;
+
+// ── Slug auto-generation ───────────────────────────
+function slugify(s) {
+    return s.toLowerCase()
+        .normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .replace(/[''ʼ]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+
+function onTitleInput() {
+    if (!slugEdited) {
+        document.getElementById('slug').value = slugify(document.getElementById('title').value);
+    }
+    update();
+}
+
+function onSlugInput() {
+    slugEdited = document.getElementById('slug').value.length > 0;
+    update();
+}
+
+function onCopyrightInput() {
+    copyrightEdited = true;
+    update();
+}
+
+// ── Parse filenames ────────────────────────────────
+function parseNames(raw) {
+    return raw.split(/[\n,]+/)
+        .map(s => {
+            s = s.trim();
+            if (/^https?:\/\//i.test(s)) s = s.split('?')[0].split('/').pop();
+            return s;
+        })
+        .filter(s => s && /\.(jpe?g|png|gif|webp|avif)$/i.test(s));
+}
+
+// ── Build copyright HTML ───────────────────────────
+function buildCopyrightHtml(name, url, text) {
+    const linkHtml = name
+        ? (url
+            ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer" class="plain-link"><strong>${esc(name)}</strong></a>`
+            : `<strong>${esc(name)}</strong>`)
+        : '';
+    if (text && linkHtml) return text + ' ' + linkHtml;
+    if (text) return text;
+    if (linkHtml) return `Fotos: ${linkHtml}`;
+    return '';
+}
+
+function esc(s) {
+    return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── Main update ────────────────────────────────────
+function update() {
+    const title    = document.getElementById('title').value.trim();
+    const slug     = document.getElementById('slug').value.trim();
+    const name     = document.getElementById('photo-name').value.trim();
+    const photoUrl = document.getElementById('photo-url').value.trim();
+    const rawPath  = document.getElementById('cloud-path').value.trim();
+    const rawNames = document.getElementById('names').value;
+
+    // Auto-copyright
+    const copyrightEl = document.getElementById('copyright');
+    if (!copyrightEdited) {
+        if (name && title) {
+            copyrightEl.value = `Bilder dürfen im Zusammenhang mit dem Event frei verwendet werden, sofern ${name ? 'Fotografie: ' + name : ''} angegeben wird.`;
+        } else if (name) {
+            copyrightEl.value = `Fotos: ${name}.`;
+        } else {
+            copyrightEl.value = '';
+        }
+    }
+    const copyrightText = copyrightEl.value.trim();
+
+    // Slug preview
+    document.getElementById('slug-preview').textContent = slug ? `?event=${slug}` : '?event=…';
+
+    // Cloudinary URLs
+    const cleanPath = rawPath.replace(/^\/+|\/+$/g, '');
+    let fullUrl = '', thumbUrl = '';
+    if (cleanPath) {
+        const base = `https://res.cloudinary.com/${CLOUD}/image/upload/`;
+        const cloudPath = `${CLOUD}/p/${cleanPath}/`;
+        fullUrl  = `${base}${XFULL}/${cloudPath}`;
+        thumbUrl = `${base}${XTHUMB}/${cloudPath}`;
+        const box = document.getElementById('url-box');
+        document.getElementById('url-full').textContent  = fullUrl;
+        document.getElementById('url-thumb').textContent = thumbUrl;
+        box.style.display = 'block';
+    } else {
+        document.getElementById('url-box').style.display = 'none';
+    }
+
+    // Image names
+    const names = parseNames(rawNames);
+    const badge = document.getElementById('count-badge');
+    if (names.length > 0) {
+        badge.textContent = names.length + ' Bilder';
+        badge.style.display = 'inline-flex';
+    } else {
+        badge.style.display = 'none';
+    }
+
+    // Build config
+    const config = {};
+    if (title) config.title = title;
+    const cpHtml = buildCopyrightHtml(name, photoUrl, copyrightText);
+    if (cpHtml) config.copyrightHtml = cpHtml;
+    if (fullUrl)  config.baseUrl = fullUrl;
+    if (thumbUrl) config.thumbnailBaseUrl = thumbUrl;
+    config.imageNames = names;
+
+    const json = JSON.stringify(config, null, 4);
+    const ready = !!(title && slug && fullUrl && names.length > 0);
+    lastJson = ready ? json : null;
+
+    // JSON preview
+    const pre = document.getElementById('json-preview');
+    if (title || fullUrl || names.length > 0) {
+        pre.textContent = json;
+    } else {
+        pre.innerHTML = '<span class="json-empty">Felder ausfüllen, um die Vorschau zu sehen …</span>';
+    }
+
+    // Gallery link
+    const isFile = location.protocol === 'file:';
+    const base = isFile
+        ? '[Deine Galerie-URL]'
+        : location.origin + location.pathname.replace(/\/[^/]*$/, '');
+    document.getElementById('gallery-link').textContent = slug
+        ? `${base}/index.html?event=${slug}`
+        : '—';
+
+    // Download button
+    const btn = document.getElementById('dl-btn');
+    btn.disabled = !ready;
+}
+
+// ── Download ───────────────────────────────────────
+function download() {
+    if (!lastJson) return;
+    const slug = document.getElementById('slug').value.trim() || 'event';
+    const blob = new Blob([lastJson], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = slug + '.json';
+    document.body.appendChild(a);
+    a.click();
+    URL.revokeObjectURL(url);
+    a.remove();
+}
+</script>
+</body>
+</html>
