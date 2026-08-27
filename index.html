@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery</title>
+  <meta name="description" content="View and download high-quality event photos from our gallery.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="assets/a+_icon_ACADEMIES_MULTI_RGB.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Site header -->
+  <header class="site-header">
+    <div class="site-header-inner">
+      <img class="site-logo" id="site-logo" src="assets/logo-en.png" alt="Swiss Academies of Arts and Sciences">
+      <div class="header-right">
+        <div class="lang-switcher" id="lang-switcher">
+          <button class="lang-btn active" data-lang="en">EN</button>
+          <button class="lang-btn" data-lang="de">DE</button>
+          <button class="lang-btn" data-lang="fr">FR</button>
+          <button class="lang-btn" data-lang="it" style="display:none">IT</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Loading / error state shown until event data is ready -->
+  <div id="gallery-loading" class="gallery-loading-screen">
+    <p>Loading…</p>
+  </div>
+
+  <!-- Main content (hidden until event is loaded) -->
+  <main id="gallery-main" style="display:none">
+
+    <!-- Breadcrumb -->
+    <div class="page-container">
+      <nav class="breadcrumb">
+        <a href="#" class="breadcrumb-link" data-i18n="breadcrumbEvents">Events</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="?" class="breadcrumb-link" id="breadcrumb-event"></a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-current" data-i18n="breadcrumbGallery">Image gallery</span>
+      </nav>
+    </div>
+
+    <!-- Hero: title, description, stats, download CTA -->
+    <section class="hero-section">
+      <div class="page-container">
+        <div class="hero-grid">
+          <div class="hero-left">
+            <div class="section-label">
+              <span class="section-label-rule"></span>
+              <span data-i18n="galleryLabel">Image gallery</span>
+            </div>
+            <h1 class="hero-title" id="page-title"></h1>
+            <div class="hero-description" id="copyright-info"></div>
+          </div>
+          <div class="hero-right">
+            <dl class="hero-stats">
+              <div class="hero-stat">
+                <dt data-i18n="statsImages">Images</dt>
+                <dd id="image-count">—</dd>
+              </div>
+              <div class="hero-stat" id="stat-date-wrap" style="display:none">
+                <dt data-i18n="statsDate">Date</dt>
+                <dd id="event-date"></dd>
+              </div>
+              <div class="hero-stat" id="stat-archive-wrap" style="display:none">
+                <dt data-i18n="statsArchive">Archive</dt>
+                <dd id="archive-size"></dd>
+              </div>
+            </dl>
+            <div class="hero-actions">
+              <button id="download-all-btn" class="btn-primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 4v11"/><path d="M7 11l5 5 5-5"/><path d="M4 20h16"/></svg>
+                <span data-i18n="downloadAllBtn">Download all images</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gallery toolbar: photographer credit + usage hint -->
+    <section class="gallery-toolbar">
+      <div class="page-container">
+        <div class="toolbar-inner">
+          <span id="photographer-credit" class="toolbar-text"></span>
+          <span class="toolbar-sep-v" id="toolbar-sep"></span>
+          <span class="toolbar-text" data-i18n="clickHint">Click an image to enlarge · ← → to browse</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gallery grid -->
+    <section class="gallery-section">
+      <div class="page-container">
+        <div class="gallery-grid" id="gallery-grid"></div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="page-container footer-inner">
+        <div class="footer-logo-wrap">
+          <img class="footer-logo" id="footer-logo" src="assets/logo-en.png" alt="Swiss Academies of Arts and Sciences">
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title" data-i18n="footerPhotography">Photography</div>
+          <div id="footer-photographer"></div>
+          <div>© <span id="footer-year"></span> Akademien der Wissenschaften Schweiz</div>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title" data-i18n="footerMediaTitle">Media enquiries</div>
+          <div>kommunikation@akademien-schweiz.ch</div>
+          <div>+41 31 306 92 20</div>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox-overlay">
+    <div class="lightbox-topbar">
+      <div class="lightbox-meta">
+        <span class="lightbox-counter" id="lightbox-counter"></span>
+        <span class="lightbox-caption" id="lightbox-caption"></span>
+      </div>
+      <div class="lightbox-topbar-actions">
+        <button id="lightbox-dl" class="lightbox-action-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 4v11"/><path d="M7 11l5 5 5-5"/><path d="M4 20h16"/></svg>
+          <span data-i18n="downloadOriginal">Download original</span>
+        </button>
+        <button id="lightbox-close" class="lightbox-close-btn" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 5l14 14"/><path d="M19 5L5 19"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="lightbox-body">
+      <button id="lightbox-prev" class="lightbox-nav-btn" aria-label="Previous">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M14 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="lightbox-img-wrap">
+        <img id="lightbox-img" src="" alt="Full view">
+      </div>
+      <button id="lightbox-next" class="lightbox-nav-btn" aria-label="Next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M10 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+    <div class="lightbox-strip" id="lightbox-strip"></div>
+  </div>
+
+  <script src="translations.js?v=2"></script>
+  <script src="data.js?v=2"></script>
+  <script src="script.js?v=2"></script>
+</body>
+</html>
